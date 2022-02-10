@@ -37,7 +37,9 @@ class HomeView extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () async{
+              await Navigator.of(context).pushNamed('/diagnostico');
+            },
             child: Container(
               width: 150,
               height: 150,

@@ -32,7 +32,7 @@ class PacienteModel {
         idade = map['idade'] ?? -1,
         cpf = map['cpf'] ?? '',
         rg = map['rg'] ?? '',
-        dataNasc = map['dataNasc'] ?? '',
+        dataNasc = map['data_nasc'] ?? '',
         sexo = map['sexo'] ?? '',
         signo = map['signo'] ?? '',
         mae = map['mae'] ?? '',
@@ -44,11 +44,11 @@ class PacienteModel {
         bairro = map['bairro'] ?? '',
         cidade = map['cidade'] ?? '',
         estado = map['estado'] ?? '',
-        telefoneFixo = map['telefoneFixo'] ?? '',
+        telefoneFixo = map['telefone_fixo'] ?? '',
         celular = map['celular'] ?? '',
         altura = map['altura'] ?? '',
         peso = map['peso'] ?? -1,
-        tipoSanguineo = map['tipoSanguineo'] ?? '',
+        tipoSanguineo = map['tipo_sanguineo'] ?? '',
         cor = map['cor'] ?? '';
 
   Map<String, dynamic> toMap() {
@@ -59,7 +59,7 @@ class PacienteModel {
     map['idade'] = idade;
     map['cpf'] = cpf;
     map['rg'] = rg;
-    map['dataNasc'] = dataNasc;
+    map['data_nasc'] = dataNasc;
     map['sexo'] = sexo;
     map['signo'] = signo;
     map['mae'] = mae;
@@ -71,11 +71,11 @@ class PacienteModel {
     map['bairro'] = bairro;
     map['cidade'] = cidade;
     map['estado'] = estado;
-    map['telefoneFixo'] = telefoneFixo;
+    map['telefone_fixo'] = telefoneFixo;
     map['celular'] = celular;
     map['altura'] = altura;
     map['peso'] = peso;
-    map['tipoSanguineo'] = tipoSanguineo;
+    map['tipo_sanguineo'] = tipoSanguineo;
     map['cor'] = cor;
 
     return map;

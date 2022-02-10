@@ -1,5 +1,3 @@
-import 'package:anlix_front/consumers/paciente_consumer.dart';
-import 'package:anlix_front/models/paciente_model.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
@@ -11,52 +9,57 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Anlix Front'),
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ElevatedButton(
-            onPressed: () async{
-              await Navigator.of(context).pushNamed('/paciente');
-            },
-            child: Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  Icon(
-                    Icons.person,
-                    size: 48,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () async{
+                  await Navigator.of(context).pushNamed('/paciente');
+                },
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
                   ),
-                  Text("Paciente"),
-                ],
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async{
-              await Navigator.of(context).pushNamed('/diagnostico');
-            },
-            child: Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  Icon(
-                    Icons.medical_services,
-                    size: 48,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const <Widget>[
+                      Icon(
+                        Icons.person,
+                        size: 48,
+                      ),
+                      Text('Pacientes'),
+                    ],
                   ),
-                  Text("Diagnósticos"),
-                ],
+                ),
               ),
-            ),
+              ElevatedButton(
+                onPressed: () async{
+                  await Navigator.of(context).pushNamed('/diagnostico');
+                },
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const <Widget>[
+                      Icon(
+                        Icons.medical_services,
+                        size: 48,
+                      ),
+                      Text('Diagnósticos'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

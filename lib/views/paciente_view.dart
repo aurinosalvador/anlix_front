@@ -15,13 +15,76 @@ class PacienteView extends StatelessWidget {
     return FutureBuilder<List<PacienteModel>>(
       future: _loadingData(),
       builder: (
-          BuildContext context,
-          AsyncSnapshot<List<PacienteModel>> snapshot,
-          ) {
-        if (!snapshot.hasData) {
+        BuildContext context,
+        AsyncSnapshot<List<PacienteModel>> snapshot,
+      ) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          List<PacienteModel> pacientes = snapshot.data!;
+
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Anlix Front'),
+              title: const Text('Clientes'),
+            ),
+            body: Column(
+              children: <Widget>[
+                
+                const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Digite para pesquisar',
+                    ),
+
+                  ),
+                ),
+                
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: pacientes.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        leading: Stack(
+                          alignment: Alignment.center,
+                          children: <Widget>[
+                            const Icon(
+                              Icons.circle,
+                              color: Colors.red,
+                              size: 36,
+                            ),
+                            Text(
+                              pacientes[index].tipoSanguineo,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        title: Text(pacientes[index].nome),
+                        subtitle: Text(
+                          'Data Nascimento: ${pacientes[index].dataNasc}',
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.done &&
+            !snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Clientes'),
             ),
             body: const Center(
               child: Text('Sem Usuários'),
@@ -30,18 +93,11 @@ class PacienteView extends StatelessWidget {
         }
 
         return Scaffold(
-            appBar: AppBar(
-              title: const Text('Anlix Front'),
-            ),
-            body: ListView.separated(
-              itemCount: snapshot.data!.length,
-              separatorBuilder: (_, __) => const Divider(),
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(snapshot.data![index].nome),
-                );
-              },
-            ));
+          appBar: AppBar(
+            title: const Text('Clientes'),
+          ),
+          body: const CircularProgressIndicator(),
+        );
       },
     );
   }

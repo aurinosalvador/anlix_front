@@ -2,10 +2,10 @@ import 'package:anlix_front/consumers/paciente_consumer.dart';
 import 'package:anlix_front/models/paciente_model.dart';
 import 'package:flutter/material.dart';
 
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+class PacienteView extends StatelessWidget {
+  const PacienteView({Key? key}) : super(key: key);
 
-  Future<List<PacienteModel>> _loadingApp() async {
+  Future<List<PacienteModel>> _loadingData() async {
     PacienteConsumer consumer = PacienteConsumer();
     return consumer.list();
   }
@@ -13,11 +13,11 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<PacienteModel>>(
-      future: _loadingApp(),
+      future: _loadingData(),
       builder: (
-        BuildContext context,
-        AsyncSnapshot<List<PacienteModel>> snapshot,
-      ) {
+          BuildContext context,
+          AsyncSnapshot<List<PacienteModel>> snapshot,
+          ) {
         if (!snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(

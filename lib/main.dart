@@ -1,14 +1,20 @@
-import 'package:anlix_front/views/home.dart';
+import 'package:anlix_front/views/home_view.dart';
+import 'package:anlix_front/views/paciente_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  final Map<String, Widget Function(BuildContext)> _routes =
+      <String, Widget Function(BuildContext)>{
+    '/home': (_) => const HomeView(),
+    '/paciente': (_) => const PacienteView(),
+  };
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,7 +22,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const Home(),
+      initialRoute: '/home',
+      routes: _routes,
     );
   }
 }

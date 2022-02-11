@@ -104,7 +104,7 @@ class PacienteView extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Pacientes'),
           ),
-          body: const CircularProgressIndicator(),
+          body: const Center(child: CircularProgressIndicator()),
         );
       },
     );

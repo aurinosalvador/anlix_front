@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       <String, Widget Function(BuildContext)>{
     '/home': (_) => const HomeView(),
     '/paciente': (_) => const PacienteView(),
-    '/diagnostico': (_) => const DiagnosticosView(),
+    '/diagnostico': (_) => DiagnosticosView(),
   };
 
   @override

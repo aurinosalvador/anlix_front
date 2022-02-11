@@ -11,12 +11,15 @@ environment:
 
 dependencies:
   cupertino_icons: ^1.0.2
-  # https://pub.dev/packages/http
+
 
   flutter:
     sdk: flutter
 
+  # https://pub.dev/packages/http
   http: 0.13.4
+  # https://pub.dev/packages/intl
+  intl: 0.17.0
 
 
 dev_dependencies:

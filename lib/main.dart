@@ -1,4 +1,3 @@
-import 'package:anlix_front/views/diagnostico_view.dart';
 import 'package:anlix_front/views/home_view.dart';
 import 'package:anlix_front/views/paciente_view.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
       <String, Widget Function(BuildContext)>{
     '/home': (_) => const HomeView(),
     '/paciente': (_) => const PacienteView(),
-    '/diagnostico': (_) => const DiagnosticoView(),
+    // '/diagnostico': (_) => const LastDiagnosticoView(),
   };
 
   @override

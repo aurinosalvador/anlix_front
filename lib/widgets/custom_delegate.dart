@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 
 class CustomDelegate extends SearchDelegate<List<PacienteModel>> {
   final StreamController<bool> _controller = StreamController<bool>();
-  late List<PacienteModel> data;
+  List<PacienteModel> data;
+  List<PacienteModel> selected;
   bool multipleSelection;
 
-  CustomDelegate({required this.data, this.multipleSelection = false});
-
-  List<PacienteModel> result = <PacienteModel>[];
+  CustomDelegate({
+    required this.data,
+    this.multipleSelection = false,
+    this.selected = const <PacienteModel>[],
+  });
 
   @override
   List<Widget> buildActions(BuildContext context) => <Widget>[
@@ -24,7 +27,7 @@ class CustomDelegate extends SearchDelegate<List<PacienteModel>> {
   @override
   Widget buildLeading(BuildContext context) => IconButton(
         icon: const Icon(Icons.chevron_left),
-        onPressed: () => close(context, result),
+        onPressed: () => close(context, selected),
       );
 
   @override
@@ -32,21 +35,22 @@ class CustomDelegate extends SearchDelegate<List<PacienteModel>> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    _controller.add(true);
     List<PacienteModel> listToShow;
     if (query.isNotEmpty) {
       listToShow = data
           .where((PacienteModel e) =>
-              e.nome.toLowerCase().contains(query.toLowerCase()) &&
+              e.nome.toLowerCase().contains(query.toLowerCase()) ||
               e.nome.toLowerCase().startsWith(query.toLowerCase()))
           .toList();
     } else {
       listToShow = data;
     }
 
+    _controller.add(true);
+
     return StreamBuilder<bool>(
       stream: _controller.stream,
-      initialData: true,
+      initialData: false,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         return ListView.separated(
           itemCount: listToShow.length,
@@ -66,10 +70,16 @@ class CustomDelegate extends SearchDelegate<List<PacienteModel>> {
               },
               child: ListTile(
                 leading: Icon(
-                  result.contains(listToShow[index])
+                  selected.any(
+                    (PacienteModel element) =>
+                        element.id == listToShow[index].id,
+                  )
                       ? Icons.check_circle
                       : Icons.circle,
-                  color: result.contains(listToShow[index])
+                  color: selected.any(
+                    (PacienteModel element) =>
+                        element.id == listToShow[index].id,
+                  )
                       ? Colors.green
                       : Colors.grey,
                   size: 36,
@@ -93,7 +103,9 @@ class CustomDelegate extends SearchDelegate<List<PacienteModel>> {
   }
 
   void _addElementToList(PacienteModel paciente) {
-    result.contains(paciente) ? result.remove(paciente) : result.add(paciente);
+    selected.contains(paciente)
+        ? selected.remove(paciente)
+        : selected.add(paciente);
     _controller.add(true);
   }
 }

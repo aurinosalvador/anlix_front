@@ -80,4 +80,14 @@ class PacienteModel {
 
     return map;
   }
+
+  @override
+  bool operator ==(Object other) {
+    return (other as PacienteModel).id == id;
+  }
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => super.hashCode;
+
 }

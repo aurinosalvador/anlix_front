@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:anlix_front/consumers/diagnostico_consumer.dart';
+import 'package:anlix_front/consumers/paciente_consumer.dart';
 import 'package:anlix_front/models/paciente_model.dart';
+import 'package:anlix_front/widgets/custom_delegate.dart';
 import 'package:anlix_front/widgets/field_group.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +15,8 @@ class DiagnosticosView extends StatefulWidget {
 }
 
 class _DiagnosticosViewState extends State<DiagnosticosView> {
-  // final DiagnosticoConsumer _consumer = DiagnosticoConsumer();
+  final DiagnosticoConsumer _consumer = DiagnosticoConsumer();
+  final PacienteConsumer _pacienteConsumer = PacienteConsumer();
 
   final StreamController<bool> _controller = StreamController<bool>();
   final List<PacienteModel> _selectedPacientes = <PacienteModel>[];
@@ -22,8 +26,6 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
     super.initState();
     _controller.add(true);
   }
-
-  // Future<void> _addPaciente(PacienteModel paciente) async {}
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                     snapshot.hasData) {
                   return FieldGroup(
                     decoration: const InputDecoration(
-                      labelText: 'Clientes',
+                      labelText: 'Pacientes',
                       border: OutlineInputBorder(),
                       counterText: '',
                     ),
@@ -53,18 +55,31 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                           child: Center(
                             child: Text('Sem pacientes selecionados'),
                           ),
+                        )
+                      else
+                        ..._selectedPacientes.map(
+                          (PacienteModel paciente) => ListTile(
+                            title: Text(paciente.nome),
+                          ),
                         ),
-                      // ElevatedButton(
-                      //   onPressed: () async {
-                      //     await Navigator.of(context).push(
-                      //       MaterialPageRoute<dynamic>(
-                      //         builder: (BuildContext context) =>
-                      //
-                      //       ),
-                      //     );
-                      //   },
-                      //   child: Text('Adicionar Paciente'.toUpperCase()),
-                      // ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          List<PacienteModel>? pacientes =
+                              await _pacienteConsumer.list();
+                          await showSearch(
+                            context: context,
+                            delegate: CustomDelegate(
+                              data: pacientes,
+                              multipleSelection: true,
+                              selected: _selectedPacientes,
+                            ),
+                          );
+
+
+                          _controller.add(true);
+                        },
+                        child: Text('Adicionar Paciente'.toUpperCase()),
+                      ),
                     ],
                   );
                 }

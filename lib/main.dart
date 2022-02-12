@@ -14,12 +14,13 @@ class MyApp extends StatelessWidget {
       <String, Widget Function(BuildContext)>{
     '/home': (_) => const HomeView(),
     '/paciente': (_) => const PacienteView(),
-    '/diagnostico': (_) => DiagnosticosView(),
+    '/diagnostico': (_) => const DiagnosticosView(),
   };
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Anlix Front',
       theme: ThemeData(
         primarySwatch: Colors.green,

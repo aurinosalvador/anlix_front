@@ -5,6 +5,7 @@ import 'package:anlix_front/consumers/paciente_consumer.dart';
 import 'package:anlix_front/models/paciente_model.dart';
 import 'package:anlix_front/widgets/custom_delegate.dart';
 import 'package:anlix_front/widgets/field_group.dart';
+import 'package:anlix_front/widgets/my_dialogs.dart';
 import 'package:flutter/material.dart';
 
 class DiagnosticosView extends StatefulWidget {
@@ -60,6 +61,23 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                         ..._selectedPacientes.map(
                           (PacienteModel paciente) => ListTile(
                             title: Text(paciente.nome),
+                            trailing: TextButton(
+                              onPressed: () async {
+                                bool delete = await MyDialogs.yesNoDialog(
+                                  context: context,
+                                  message: 'Deseja realmente excluir?',
+                                );
+
+                                if(delete){
+                                  _selectedPacientes.remove(paciente);
+                                  _controller.add(true);
+                                }
+                              },
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.green,
+                              ),
+                            ),
                           ),
                         ),
                       ElevatedButton(
@@ -74,9 +92,9 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                               selected: _selectedPacientes,
                             ),
                           );
-
-
                           _controller.add(true);
+
+                          print(_selectedPacientes.length);
                         },
                         child: Text('Adicionar Paciente'.toUpperCase()),
                       ),

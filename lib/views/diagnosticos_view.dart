@@ -74,31 +74,33 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                             )
                           else
                             ..._selectedPacientes.map(
-                              (PacienteModel paciente) => ListTile(
-                                title: Text(paciente.nome),
-                                trailing: TextButton(
-                                  onPressed: () async {
-                                    bool delete = await MyDialogs.yesNoDialog(
-                                      context: context,
-                                      message: 'Deseja realmente excluir?',
-                                    );
+                                  (PacienteModel paciente) =>
+                                  ListTile(
+                                    title: Text(paciente.nome),
+                                    trailing: TextButton(
+                                      onPressed: () async {
+                                        bool delete = await MyDialogs
+                                            .yesNoDialog(
+                                          context: context,
+                                          message: 'Deseja realmente excluir?',
+                                        );
 
-                                    if (delete) {
-                                      _selectedPacientes.remove(paciente);
-                                      _controller.add(true);
-                                    }
-                                  },
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.green,
+                                        if (delete) {
+                                          _selectedPacientes.remove(paciente);
+                                          _controller.add(true);
+                                        }
+                                      },
+                                      child: const Icon(
+                                        Icons.delete,
+                                        color: Colors.green,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
                             ),
                           ElevatedButton(
                             onPressed: () async {
                               List<PacienteModel>? pacientes =
-                                  await _pacienteConsumer.list();
+                              await _pacienteConsumer.list();
                               await showSearch(
                                 context: context,
                                 delegate: CustomDelegate(
@@ -194,7 +196,11 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8),
                                     child: ElevatedButton.icon(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        print(_initDateController.date);
+                                        print(_endDateController.date);
+                                        isValuesValid();
+                                      },
                                       icon: const Icon(Icons.download_rounded),
                                       label: const Text('Exportar CSV'),
                                     ),
@@ -204,7 +210,15 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8),
                                     child: ElevatedButton.icon(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        if(isValuesValid()){
+                                          _consumer.getByDateInterval(
+                                              _selectedPacientes,
+                                              _initDateController.date!,
+                                              _endDateController.date!);
+                                        }
+
+                                      },
                                       icon: const Icon(Icons.bar_chart),
                                       label: const Text('Mostrar Gráfico'),
                                     ),
@@ -230,12 +244,31 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
     );
   }
 
-  bool enableButtons() {
-    if(_filterType == FilterType.date){
-      return _initDateController.date != null && _endDateController.date != null;
-    } else {
+  bool isValuesValid() {
+    if (_initDateController.date == null &&
+        _endDateController.date == null) {
+      MyDialogs.dialogMessage(
+        context: context,
+        message: "Selecione um Intervalo.",
+      );
+      return false;
+    } else if (_initDateController.date == null &&
+        _endDateController.date != null) {
+      MyDialogs.dialogMessage(
+        context: context,
+        message: "Selecione uma data inicial.",
+      );
+      return false;
+    } else if (_initDateController.date != null &&
+        _endDateController.date == null) {
+      MyDialogs.dialogMessage(
+        context: context,
+        message: "Selecione uma data final.",
+      );
       return false;
     }
+
+    return true;
   }
 
   @override

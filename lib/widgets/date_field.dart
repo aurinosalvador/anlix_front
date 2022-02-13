@@ -26,8 +26,10 @@ class DateField extends StatefulWidget {
     this.format = 'dd/MM/yyyy',
     this.mask = '##/##/####',
     this.decoration,
-  }) : assert(initialValue == null || controller == null,
-            'initialValue or controller must be null.');
+    Key? key,
+  })  : assert(initialValue == null || controller == null,
+            'initialValue or controller must be null.'),
+        super(key: key);
 
   @override
   DateFieldState createState() => DateFieldState();
@@ -75,7 +77,7 @@ class DateFieldState extends State<DateField> {
           onPressed: () async {
             DateTime? selectedDate = await showDatePicker(
               context: context,
-              initialDate: _effectiveController.date?? DateTime.now(),
+              initialDate: _effectiveController.date ?? DateTime.now(),
               firstDate: widget.firstDate ?? DateTime(1900),
               lastDate: widget.lastDate ?? DateTime(2100),
             );

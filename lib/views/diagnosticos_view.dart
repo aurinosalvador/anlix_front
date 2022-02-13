@@ -12,8 +12,8 @@ import 'package:anlix_front/widgets/my_dialogs.dart';
 import 'package:flutter/material.dart';
 
 enum FilterType {
-  date,
-  value,
+  ind_pulm,
+  ind_card,
 }
 
 class DiagnosticosView extends StatefulWidget {
@@ -33,7 +33,7 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
 
   final List<PacienteModel> _selectedPacientes = <PacienteModel>[];
 
-  FilterType _filterType = FilterType.date;
+  FilterType _filterType = FilterType.ind_pulm;
 
   @override
   void initState() {
@@ -116,149 +116,40 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                         ],
                       ),
 
+                      // Gerar CSV
                       Visibility(
                         visible: _selectedPacientes.isNotEmpty,
                         child: FieldGroup(
                           decoration: const InputDecoration(
-                            labelText: 'Filtros',
+                            labelText: 'Exportar',
                             border: OutlineInputBorder(),
                             counterText: '',
                           ),
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                const Text('Filtrar por: '),
-                                Flexible(
-                                  child: ListTile(
-                                    title: const Text('Data'),
-                                    leading: Radio<FilterType>(
-                                      value: FilterType.date,
-                                      groupValue: _filterType,
-                                      onChanged: (FilterType? value) {
-                                        _filterType = value!;
-                                        _controller.add(true);
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 6,
-                                  child: ListTile(
-                                    title: const Text('Valores'),
-                                    leading: Radio<FilterType>(
-                                      value: FilterType.value,
-                                      groupValue: _filterType,
-                                      onChanged: (FilterType? value) {
-                                        _filterType = value!;
-                                        _controller.add(true);
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Visibility(
-                                visible: _filterType == FilterType.date,
-                                child: Row(
-                                  children: <Widget>[
-                                    const Text(
-                                      'Selecione o intervalo de datas:',
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                      child: SizedBox(
-                                        width: 200,
-                                        child: DateField(
-                                          controller: _initDateController,
-                                          label: 'Data inicial',
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: DateField(
-                                        controller: _endDateController,
-                                        label: 'Data final',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: ElevatedButton.icon(
-                                      onPressed: () async {
-                                        if (isValuesValid()) {
-                                          Map<int, List<DiagnosticoModel>>
-                                          result =
-                                              await _consumer.getByDateInterval(
-                                              _selectedPacientes,
-                                              _initDateController.date!,
-                                              _endDateController.date!);
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                Map<int, List<DiagnosticoModel>> result =
+                                    await _consumer.getByListPacienteId(
+                                        _selectedPacientes);
 
-                                          bool success = await CsvUtil.getCsv(
-                                            list: result,
-                                          );
-
-                                          if (!success) {
-                                            await MyDialogs.dialogMessage(
-                                              context: context,
-                                              message:
-                                              'Sem dados para exportar.',
-                                            );
-                                          }
-                                        }
-                                      },
-                                      icon: const Icon(Icons.download_rounded),
-                                      label: const Text('Exportar CSV'),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: ElevatedButton.icon(
-                                      onPressed: () async {
-                                        if (isValuesValid()) {
-                                          Map<int, List<DiagnosticoModel>>
-                                              result =
-                                              await _consumer.getByDateInterval(
-                                                  _selectedPacientes,
-                                                  _initDateController.date!,
-                                                  _endDateController.date!);
-
-                                          bool success = await CsvUtil.getCsv(
-                                            list: result,
-                                          );
-
-                                          if (!success) {
-                                            await MyDialogs.dialogMessage(
-                                              context: context,
-                                              message:
-                                                  'Sem dados para exportar.',
-                                            );
-                                          }
-                                        }
-                                      },
-                                      icon: const Icon(Icons.bar_chart),
-                                      label: const Text('Mostrar Gráfico'),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                                bool success = await CsvUtil.getCsv(
+                                  list: result,
+                                );
+                                if (!success) {
+                                  await MyDialogs.dialogMessage(
+                                    context: context,
+                                    message: 'Sem dados para exportar.',
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.download_rounded),
+                              label: const Text('Exportar CSV'),
+                            )
                           ],
                         ),
                       ),
+
+
                     ],
                   );
                 }
@@ -272,32 +163,6 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
         ],
       ),
     );
-  }
-
-  bool isValuesValid() {
-    if (_initDateController.date == null && _endDateController.date == null) {
-      MyDialogs.dialogMessage(
-        context: context,
-        message: 'Selecione um Intervalo.',
-      );
-      return false;
-    } else if (_initDateController.date == null &&
-        _endDateController.date != null) {
-      MyDialogs.dialogMessage(
-        context: context,
-        message: 'Selecione uma data inicial.',
-      );
-      return false;
-    } else if (_initDateController.date != null &&
-        _endDateController.date == null) {
-      MyDialogs.dialogMessage(
-        context: context,
-        message: 'Selecione uma data final.',
-      );
-      return false;
-    }
-
-    return true;
   }
 
   @override

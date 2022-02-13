@@ -1,9 +1,10 @@
+import 'package:anlix_front/utils/date_validator.dart';
 import 'package:flutter/material.dart';
 
 class DateField extends StatefulWidget {
   final String label;
+  final DateEditingController? controller;
 
-  // final DateEditingController? controller;
   //addDateValidator
   final DateTime? initialValue;
   final bool enabled;
@@ -16,6 +17,7 @@ class DateField extends StatefulWidget {
 
   const DateField({
     this.label = '',
+    this.controller,
     this.initialValue,
     this.enabled = true,
     this.firstDate,
@@ -31,11 +33,28 @@ class DateField extends StatefulWidget {
 }
 
 class DateFieldState extends State<DateField> {
-  TextEditingController _controller = TextEditingController();
+  DateValidator? _validator;
+  DateEditingController? _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _validator = DateValidator(
+      locale: widget.locale,
+      format: widget.format,
+    );
+
+    if (widget.controller == null) {
+      _controller = DateEditingController(dateTime: widget.initialValue);
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: _controller,
       keyboardType: TextInputType.datetime,
       minLines: 1,
       maxLength: widget.mask.length,
@@ -53,17 +72,35 @@ class DateFieldState extends State<DateField> {
           onPressed: () async {
             DateTime? selectedDate = await showDatePicker(
               context: context,
-              initialDate: DateTime.now(),
+              initialDate: _controller!.date ?? DateTime.now(),
               firstDate: widget.firstDate ?? DateTime(1900),
               lastDate: widget.lastDate ?? DateTime(2100),
             );
 
-            print(selectedDate.toString());
-
-            // _controller.text = selectedDate.
+            _controller!.date = selectedDate;
           },
         ),
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+
+    super.dispose();
+  }
+}
+
+class DateEditingController extends TextEditingController {
+  DateEditingController({DateTime? dateTime})
+      : super(text: dateTime == null ? '' : DateValidator().format(dateTime));
+
+  DateEditingController.fromValue(TextEditingValue value)
+      : super.fromValue(value);
+
+  DateTime? get date => DateValidator().parse(text);
+
+  set date(DateTime? date) =>
+      text = date == null ? '' : DateValidator().format(date);
 }

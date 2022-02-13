@@ -5,6 +5,7 @@ import 'package:anlix_front/consumers/paciente_consumer.dart';
 import 'package:anlix_front/models/diagnostico_model.dart';
 import 'package:anlix_front/models/paciente_model.dart';
 import 'package:anlix_front/utils/csv_util.dart';
+import 'package:anlix_front/views/charts_view.dart';
 import 'package:anlix_front/widgets/custom_delegate.dart';
 import 'package:anlix_front/widgets/date_field.dart';
 import 'package:anlix_front/widgets/field_group.dart';
@@ -47,120 +48,195 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
       appBar: AppBar(
         title: const Text('Diagnósticos'),
       ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: StreamBuilder<bool>(
-              stream: _controller.stream,
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.connectionState == ConnectionState.active &&
-                    snapshot.hasData) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      // Pacientes
-                      FieldGroup(
-                        decoration: const InputDecoration(
-                          labelText: 'Pacientes',
-                          border: OutlineInputBorder(),
-                          counterText: '',
-                        ),
-                        children: <Widget>[
-                          if (_selectedPacientes.isEmpty)
-                            const SizedBox(
-                              height: 75,
-                              child: Center(
-                                child: Text('Sem pacientes selecionados'),
-                              ),
-                            )
-                          else
-                            ..._selectedPacientes.map(
-                              (PacienteModel paciente) => ListTile(
-                                title: Text(paciente.nome),
-                                trailing: TextButton(
-                                  onPressed: () async {
-                                    bool delete = await MyDialogs.yesNoDialog(
-                                      context: context,
-                                      message: 'Deseja realmente excluir?',
-                                    );
-
-                                    if (delete) {
-                                      _selectedPacientes.remove(paciente);
-                                      _controller.add(true);
-                                    }
-                                  },
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              List<PacienteModel>? pacientes =
-                                  await _pacienteConsumer.list();
-                              await showSearch(
-                                context: context,
-                                delegate: CustomDelegate(
-                                  data: pacientes,
-                                  multipleSelection: true,
-                                  selected: _selectedPacientes,
-                                ),
-                              );
-                              _controller.add(true);
-                            },
-                            child: Text('Adicionar Paciente'.toUpperCase()),
-                          ),
-                        ],
-                      ),
-
-                      // Gerar CSV
-                      Visibility(
-                        visible: _selectedPacientes.isNotEmpty,
-                        child: FieldGroup(
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: StreamBuilder<bool>(
+                stream: _controller.stream,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active &&
+                      snapshot.hasData) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        // Pacientes
+                        FieldGroup(
                           decoration: const InputDecoration(
-                            labelText: 'Exportar',
+                            labelText: 'Pacientes',
                             border: OutlineInputBorder(),
                             counterText: '',
                           ),
                           children: <Widget>[
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                Map<int, List<DiagnosticoModel>> result =
-                                    await _consumer.getByListPacienteId(
-                                        _selectedPacientes);
+                            if (_selectedPacientes.isEmpty)
+                              const SizedBox(
+                                height: 75,
+                                child: Center(
+                                  child: Text('Sem pacientes selecionados'),
+                                ),
+                              )
+                            else
+                              ..._selectedPacientes.map(
+                                (PacienteModel paciente) => ListTile(
+                                  title: Text(paciente.nome),
+                                  trailing: TextButton(
+                                    onPressed: () async {
+                                      bool delete = await MyDialogs.yesNoDialog(
+                                        context: context,
+                                        message: 'Deseja realmente excluir?',
+                                      );
 
-                                bool success = await CsvUtil.getCsv(
-                                  list: result,
+                                      if (delete) {
+                                        _selectedPacientes.remove(paciente);
+                                        _controller.add(true);
+                                      }
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                List<PacienteModel>? pacientes =
+                                    await _pacienteConsumer.list();
+                                await showSearch(
+                                  context: context,
+                                  delegate: CustomDelegate(
+                                    data: pacientes,
+                                    multipleSelection: true,
+                                    selected: _selectedPacientes,
+                                  ),
                                 );
-                                if (!success) {
-                                  await MyDialogs.dialogMessage(
-                                    context: context,
-                                    message: 'Sem dados para exportar.',
-                                  );
-                                }
+                                _controller.add(true);
                               },
-                              icon: const Icon(Icons.download_rounded),
-                              label: const Text('Exportar CSV'),
-                            )
+                              child: Text('Adicionar Paciente'.toUpperCase()),
+                            ),
                           ],
                         ),
-                      ),
 
+                        // Gerar CSV
+                        Visibility(
+                          visible: _selectedPacientes.isNotEmpty,
+                          child: FieldGroup(
+                            decoration: const InputDecoration(
+                              labelText: 'Exportar',
+                              border: OutlineInputBorder(),
+                              counterText: '',
+                            ),
+                            children: <Widget>[
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  Map<int, List<DiagnosticoModel>> result =
+                                      await _consumer.getByListPacienteId(
+                                          _selectedPacientes);
 
-                    ],
+                                  bool success = await CsvUtil.getCsv(
+                                    list: result,
+                                  );
+                                  if (!success) {
+                                    await MyDialogs.dialogMessage(
+                                      context: context,
+                                      message: 'Sem dados para exportar.',
+                                    );
+                                  }
+                                },
+                                icon: const Icon(Icons.download_rounded),
+                                label: const Text('Exportar CSV'),
+                              )
+                            ],
+                          ),
+                        ),
+
+                        // Gerar Gráficos
+                        Visibility(
+                          visible: _selectedPacientes.isNotEmpty,
+                          child: FieldGroup(
+                            decoration: const InputDecoration(
+                              labelText: 'Gerar Gráficos',
+                              border: OutlineInputBorder(),
+                              counterText: '',
+                            ),
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  const Text('Filtrar por: '),
+                                  Flexible(
+                                    child: ListTile(
+                                      title: const Text('Índice Pulmonar'),
+                                      leading: Radio<FilterType>(
+                                        value: FilterType.ind_pulm,
+                                        groupValue: _filterType,
+                                        onChanged: (FilterType? value) {
+                                          _filterType = value!;
+                                          _controller.add(true);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: ListTile(
+                                      title: const Text('Índice Cardíaco'),
+                                      leading: Radio<FilterType>(
+                                        value: FilterType.ind_card,
+                                        groupValue: _filterType,
+                                        onChanged: (FilterType? value) {
+                                          _filterType = value!;
+                                          _controller.add(true);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  if (_selectedPacientes.length > 1) {
+                                    await MyDialogs.dialogMessage(
+                                      context: context,
+                                      message: 'Selecione apenas um paciente.',
+                                    );
+
+                                    return;
+                                  }
+
+                                  List<DiagnosticoModel> result =
+                                      await _consumer.getByPacienteIdAndType(
+                                    _selectedPacientes.first.id,
+                                    _filterType.name,
+                                  );
+
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute<Widget>(
+                                        builder: (_) => ChartsView(
+                                              diagnosticos: result,
+                                              pacienteName:
+                                                  _selectedPacientes.first.nome,
+                                              type: _filterType.name,
+                                            )),
+                                  );
+                                },
+                                icon: const Icon(Icons.bar_chart),
+                                label: const Text('Mostrar Gráfico'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                }
-
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

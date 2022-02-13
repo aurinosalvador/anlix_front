@@ -26,6 +26,9 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
   final PacienteConsumer _pacienteConsumer = PacienteConsumer();
 
   final StreamController<bool> _controller = StreamController<bool>();
+  final DateEditingController _initDateController = DateEditingController();
+  final DateEditingController _endDateController = DateEditingController();
+
   final List<PacienteModel> _selectedPacientes = <PacienteModel>[];
 
   FilterType _filterType = FilterType.date;
@@ -157,15 +160,57 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
                               child: Visibility(
                                 visible: _filterType == FilterType.date,
                                 child: Row(
-                                  children: const <Widget>[
-                                    Text(
+                                  children: <Widget>[
+                                    const Text(
                                       'Selecione o intervalo de datas:',
                                     ),
-
-                                    Flexible(child: DateField()),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      child: SizedBox(
+                                        width: 200,
+                                        child: DateField(
+                                          controller: _initDateController,
+                                          label: 'Data inicial',
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 200,
+                                      child: DateField(
+                                        controller: _endDateController,
+                                        label: 'Data final',
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {},
+                                      icon: const Icon(Icons.download_rounded),
+                                      label: const Text('Exportar CSV'),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {},
+                                      icon: const Icon(Icons.bar_chart),
+                                      label: const Text('Mostrar Gráfico'),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -183,6 +228,14 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
         ],
       ),
     );
+  }
+
+  bool enableButtons() {
+    if(_filterType == FilterType.date){
+      return _initDateController.date != null && _endDateController.date != null;
+    } else {
+      return false;
+    }
   }
 
   @override

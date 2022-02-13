@@ -26,7 +26,8 @@ class DateField extends StatefulWidget {
     this.format = 'dd/MM/yyyy',
     this.mask = '##/##/####',
     this.decoration,
-  });
+  }) : assert(initialValue == null || controller == null,
+            'initialValue or controller must be null.');
 
   @override
   DateFieldState createState() => DateFieldState();
@@ -35,6 +36,9 @@ class DateField extends StatefulWidget {
 class DateFieldState extends State<DateField> {
   DateValidator? _validator;
   DateEditingController? _controller;
+
+  DateEditingController get _effectiveController =>
+      widget.controller ?? _controller!;
 
   @override
   void initState() {
@@ -48,13 +52,12 @@ class DateFieldState extends State<DateField> {
     if (widget.controller == null) {
       _controller = DateEditingController(dateTime: widget.initialValue);
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: _controller,
+      controller: _effectiveController,
       keyboardType: TextInputType.datetime,
       minLines: 1,
       maxLength: widget.mask.length,
@@ -72,12 +75,12 @@ class DateFieldState extends State<DateField> {
           onPressed: () async {
             DateTime? selectedDate = await showDatePicker(
               context: context,
-              initialDate: _controller!.date ?? DateTime.now(),
+              initialDate: _effectiveController.date?? DateTime.now(),
               firstDate: widget.firstDate ?? DateTime(1900),
               lastDate: widget.lastDate ?? DateTime(2100),
             );
 
-            _controller!.date = selectedDate;
+            _effectiveController.date = selectedDate;
           },
         ),
       ),

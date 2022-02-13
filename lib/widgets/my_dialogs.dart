@@ -50,4 +50,33 @@ class MyDialogs {
     return value ?? false;
   }
 
+
+  static Future<void> dialogMessage({
+    required BuildContext context,
+    required String? message,
+    String title = 'Atenção',
+    String buttonText = 'OK',
+    String defaultMessage = 'Error.',
+    bool scrollable = false,
+  }) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message ?? defaultMessage),
+          scrollable: scrollable,
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(buttonText),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
+

@@ -4,9 +4,15 @@ import 'package:anlix_front/consumers/diagnostico_consumer.dart';
 import 'package:anlix_front/consumers/paciente_consumer.dart';
 import 'package:anlix_front/models/paciente_model.dart';
 import 'package:anlix_front/widgets/custom_delegate.dart';
+import 'package:anlix_front/widgets/date_field.dart';
 import 'package:anlix_front/widgets/field_group.dart';
 import 'package:anlix_front/widgets/my_dialogs.dart';
 import 'package:flutter/material.dart';
+
+enum FilterType {
+  date,
+  value,
+}
 
 class DiagnosticosView extends StatefulWidget {
   const DiagnosticosView({Key? key}) : super(key: key);
@@ -21,6 +27,8 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
 
   final StreamController<bool> _controller = StreamController<bool>();
   final List<PacienteModel> _selectedPacientes = <PacienteModel>[];
+
+  FilterType _filterType = FilterType.date;
 
   @override
   void initState() {
@@ -43,60 +51,124 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.connectionState == ConnectionState.active &&
                     snapshot.hasData) {
-                  return FieldGroup(
-                    decoration: const InputDecoration(
-                      labelText: 'Pacientes',
-                      border: OutlineInputBorder(),
-                      counterText: '',
-                    ),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      if (_selectedPacientes.isEmpty)
-                        const SizedBox(
-                          height: 75,
-                          child: Center(
-                            child: Text('Sem pacientes selecionados'),
-                          ),
-                        )
-                      else
-                        ..._selectedPacientes.map(
-                          (PacienteModel paciente) => ListTile(
-                            title: Text(paciente.nome),
-                            trailing: TextButton(
-                              onPressed: () async {
-                                bool delete = await MyDialogs.yesNoDialog(
-                                  context: context,
-                                  message: 'Deseja realmente excluir?',
-                                );
+                      // Pacientes
+                      FieldGroup(
+                        decoration: const InputDecoration(
+                          labelText: 'Pacientes',
+                          border: OutlineInputBorder(),
+                          counterText: '',
+                        ),
+                        children: <Widget>[
+                          if (_selectedPacientes.isEmpty)
+                            const SizedBox(
+                              height: 75,
+                              child: Center(
+                                child: Text('Sem pacientes selecionados'),
+                              ),
+                            )
+                          else
+                            ..._selectedPacientes.map(
+                              (PacienteModel paciente) => ListTile(
+                                title: Text(paciente.nome),
+                                trailing: TextButton(
+                                  onPressed: () async {
+                                    bool delete = await MyDialogs.yesNoDialog(
+                                      context: context,
+                                      message: 'Deseja realmente excluir?',
+                                    );
 
-                                if(delete){
-                                  _selectedPacientes.remove(paciente);
-                                  _controller.add(true);
-                                }
-                              },
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.green,
+                                    if (delete) {
+                                      _selectedPacientes.remove(paciente);
+                                      _controller.add(true);
+                                    }
+                                  },
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.green,
+                                  ),
+                                ),
                               ),
                             ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              List<PacienteModel>? pacientes =
+                                  await _pacienteConsumer.list();
+                              await showSearch(
+                                context: context,
+                                delegate: CustomDelegate(
+                                  data: pacientes,
+                                  multipleSelection: true,
+                                  selected: _selectedPacientes,
+                                ),
+                              );
+                              _controller.add(true);
+                            },
+                            child: Text('Adicionar Paciente'.toUpperCase()),
                           ),
-                        ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          List<PacienteModel>? pacientes =
-                              await _pacienteConsumer.list();
-                          await showSearch(
-                            context: context,
-                            delegate: CustomDelegate(
-                              data: pacientes,
-                              multipleSelection: true,
-                              selected: _selectedPacientes,
-                            ),
-                          );
-                          _controller.add(true);
+                        ],
+                      ),
 
-                          print(_selectedPacientes.length);
-                        },
-                        child: Text('Adicionar Paciente'.toUpperCase()),
+                      Visibility(
+                        visible: _selectedPacientes.isNotEmpty,
+                        child: FieldGroup(
+                          decoration: const InputDecoration(
+                            labelText: 'Filtros',
+                            border: OutlineInputBorder(),
+                            counterText: '',
+                          ),
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                const Text('Filtrar por: '),
+                                Flexible(
+                                  child: ListTile(
+                                    title: const Text('Data'),
+                                    leading: Radio<FilterType>(
+                                      value: FilterType.date,
+                                      groupValue: _filterType,
+                                      onChanged: (FilterType? value) {
+                                        _filterType = value!;
+                                        _controller.add(true);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 6,
+                                  child: ListTile(
+                                    title: const Text('Valores'),
+                                    leading: Radio<FilterType>(
+                                      value: FilterType.value,
+                                      groupValue: _filterType,
+                                      onChanged: (FilterType? value) {
+                                        _filterType = value!;
+                                        _controller.add(true);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Visibility(
+                                visible: _filterType == FilterType.date,
+                                child: Row(
+                                  children: const <Widget>[
+                                    Text(
+                                      'Selecione o intervalo de datas:',
+                                    ),
+
+                                    Flexible(child: DateField()),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   );

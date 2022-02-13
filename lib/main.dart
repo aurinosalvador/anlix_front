@@ -2,6 +2,7 @@ import 'package:anlix_front/views/diagnosticos_view.dart';
 import 'package:anlix_front/views/home_view.dart';
 import 'package:anlix_front/views/paciente_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,6 +28,14 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/home',
       routes: _routes,
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const <Locale>[
+        Locale('pt', 'BR'),
+      ],
     );
   }
 }

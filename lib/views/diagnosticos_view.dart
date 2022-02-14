@@ -7,6 +7,7 @@ import 'package:anlix_front/models/diagnostico_model.dart';
 import 'package:anlix_front/models/paciente_model.dart';
 import 'package:anlix_front/utils/csv_util.dart';
 import 'package:anlix_front/views/charts_view.dart';
+import 'package:anlix_front/widgets/custom_ciarcular_progress_indicator.dart';
 import 'package:anlix_front/widgets/custom_delegate.dart';
 import 'package:anlix_front/widgets/date_field.dart';
 import 'package:anlix_front/widgets/field_group.dart';
@@ -57,7 +58,9 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
               if (result != null) {
                 PlatformFile file = result.files.first;
 
-                await _consumer.importFiles(file);
+                await Future<void>.delayed(const Duration(seconds: 5));
+
+                // await _consumer.importFiles(file);
               }
             },
             icon: const Icon(Icons.upload_sharp, color: Colors.white),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:anlix_front/models/paciente_model.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
 class PacienteConsumer {
@@ -17,4 +18,28 @@ class PacienteConsumer {
         .toList();
   }
 
+  Future<Map<String, dynamic>> importFile(PlatformFile file) async {
+    Uri url = Uri.parse(apiUrl + '/paciente/import');
+
+    final http.MultipartRequest request = http.MultipartRequest(
+      'POST',
+      url,
+    );
+
+    request.files.add(http.MultipartFile.fromBytes(
+      'file',
+      file.bytes!,
+      filename: file.name,
+    ));
+
+    http.StreamedResponse resp = await request.send();
+
+    String res = await resp.stream.bytesToString();
+    Map<String, dynamic> result = jsonDecode(res) as Map<String, dynamic>;
+
+    return <String, dynamic>{
+      'status': resp.statusCode,
+      'message': result['error'],
+    };
+  }
 }

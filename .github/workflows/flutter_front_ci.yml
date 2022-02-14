@@ -1,0 +1,51 @@
+name: Flutter Front CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+        # Seguindo o Artigo https://cleitonbueno.com/linux-o-comando-cut/
+      - name: Get pubspec version
+        run: |
+          export VERSION=$(grep 'version:' pubspec.yaml | cut -c10- | cut -f1 -d'+')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Flutter build Action
+        uses: subosito/flutter-action@v1
+
+      - name: Flutter config
+        run: flutter config --enable-web --no-analytics
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Flutter build project
+        run: flutter build web
+
+      - name: Log in to GitHub Docker Registry
+        uses: docker/login-action@v1
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build generate image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            docker.pkg.github.com/${{ github.repository }}/anlix-front:latest
+            docker.pkg.github.com/${{ github.repository }}/anlix-front:${{ env.VERSION }}
+
+

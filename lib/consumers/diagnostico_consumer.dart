@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class DiagnosticoConsumer {
-  static const String apiUrl = 'http://192.168.0.107:8081/api/v1';
+  static const String apiUrl = 'http://172.17.0.1:8080/api/v1';
 
   Future<List<DiagnosticoModel>> getLastByPacienteId(int id) async {
     Uri url = Uri.parse(apiUrl + '/diagnostico/paciente/$id/last');

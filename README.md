@@ -47,7 +47,7 @@ Executar o docker-composer pra baixar as imagens e montar os containers necessá
 docker-compose up -d
 ``` 
 
-Acesse no seu navegador o endereço http://localhost
+Acesse no seu navegador o endereço http://localhost:3200
 
 ### Populando o banco.
 

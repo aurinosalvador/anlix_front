@@ -47,20 +47,33 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
 
   @override
   Widget build(BuildContext context) {
+    final CustomCircularProgressIndicator myCircular =
+        CustomCircularProgressIndicator(
+      context: context,
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Diagnósticos'),
         actions: <Widget>[
           TextButton.icon(
             onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles();
+              FilePickerResult? result = await FilePicker.platform.pickFiles(
+                allowMultiple: true,
+              );
 
               if (result != null) {
-                PlatformFile file = result.files.first;
+                myCircular.show();
+                List<PlatformFile> files = result.files;
 
-                await Future<void>.delayed(const Duration(seconds: 5));
+                for (PlatformFile file in files) {
+                  await _consumer.importFiles(file);
+                }
 
-                // await _consumer.importFiles(file);
+                myCircular.close();
+                await MyDialogs.dialogMessage(
+                  context: context,
+                  message: 'Arquivos Importados com sucesso!',
+                );
               }
             },
             icon: const Icon(Icons.upload_sharp, color: Colors.white),

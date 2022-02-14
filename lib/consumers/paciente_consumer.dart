@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
 class PacienteConsumer {
-  static const String apiUrl = 'http://172.17.0.1:8080/api/v1';
+  static const String apiUrl = 'http://localhost:8080/api/v1';
 
   Future<List<PacienteModel>> list() async {
     Uri url = Uri.parse(apiUrl + '/paciente/');

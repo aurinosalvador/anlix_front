@@ -29,22 +29,21 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/anlix_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      ports:
-        - "8080:8080"
-      networks:
-        - anlix_challenge_network
-      depends_on:
-        - database
+    ports:
+      - "8080:8080"
+    networks:
+      - anlix_challenge_network
+    depends_on:
+      - database
 
   # Flutter
   front:
     image: docker.pkg.github.com/aurinosalvador/anlix_front/anlix-front:latest
-    environment:
-      ports:
-        - "80:80"
-      networks:
-        - anlix_challenge_network
-      depends_on:
-        - database
-        - back
+    ports:
+      - "80:80"
+    networks:
+      - anlix_challenge_network
+    depends_on:
+      - database
+      - back
 

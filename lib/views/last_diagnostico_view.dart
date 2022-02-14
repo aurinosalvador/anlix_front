@@ -43,7 +43,9 @@ class _LastDiagnosticoViewState extends State<LastDiagnosticoView> {
     diagnosticos =
         await diagnosticoConsumer.getLastByPacienteId(widget.paciente.id);
 
-    _controller.add(Status.done);
+    diagnosticos.isEmpty
+        ? _controller.add(Status.empty)
+        : _controller.add(Status.done);
   }
 
   @override
@@ -119,9 +121,7 @@ class _LastDiagnosticoViewState extends State<LastDiagnosticoView> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Text(
-                'Índice: ${diagnostico.tipo == 'ind_pulm'
-                    ? 'Pulmonar'
-                    : 'Cardíaco'}',
+                'Índice: ${diagnostico.tipo == 'ind_pulm' ? 'Pulmonar' : 'Cardíaco'}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),

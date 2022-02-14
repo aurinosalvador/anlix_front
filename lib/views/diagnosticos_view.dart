@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:anlix_front/consumers/diagnostico_consumer.dart';
 import 'package:anlix_front/consumers/paciente_consumer.dart';
@@ -10,6 +11,7 @@ import 'package:anlix_front/widgets/custom_delegate.dart';
 import 'package:anlix_front/widgets/date_field.dart';
 import 'package:anlix_front/widgets/field_group.dart';
 import 'package:anlix_front/widgets/my_dialogs.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 enum FilterType {
@@ -47,6 +49,24 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Diagnósticos'),
+        actions: <Widget>[
+          TextButton.icon(
+            onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+              if (result != null) {
+                PlatformFile file = result.files.first;
+
+                await _consumer.importFiles(file);
+              }
+            },
+            icon: const Icon(Icons.upload_sharp, color: Colors.white),
+            label: const Text(
+              'Importar Dados',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -239,6 +259,11 @@ class _DiagnosticosViewState extends State<DiagnosticosView> {
         ),
       ),
     );
+  }
+
+  List<int> convertFileToCast(Uint8List data) {
+    List<int> list = data.cast();
+    return list;
   }
 
   @override

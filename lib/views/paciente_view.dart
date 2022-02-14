@@ -77,7 +77,7 @@ class _PacienteViewState extends State<PacienteView> {
                     context: context,
                     message: 'Arquivo Importado com sucesso!',
                   );
-                  _controller.add(Status.done);
+                  await _loadingData();
                 } else {
                   await MyDialogs.dialogMessage(
                     context: context,

@@ -34,12 +34,11 @@ class PacienteConsumer {
 
     http.StreamedResponse resp = await request.send();
 
-    String res = await resp.stream.bytesToString();
-    Map<String, dynamic> result = jsonDecode(res) as Map<String, dynamic>;
+    String result = await resp.stream.bytesToString();
 
     return <String, dynamic>{
       'status': resp.statusCode,
-      'message': result['error'],
+      'message': result,
     };
   }
 }

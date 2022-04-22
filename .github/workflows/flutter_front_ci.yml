@@ -50,8 +50,8 @@ jobs:
         with:
           push: true
           tags: |
-            aurinosalvador/anlix-front-desafio:${{ env.VERSION }}
-            aurinosalvador/anlix-front-desafio:latest
+            aurinosalvador/anlix-front:${{ env.VERSION }}
+            aurinosalvador/anlix-front:latest
           context: .
 
 #      - name: Build generate image

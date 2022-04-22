@@ -49,10 +49,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          file: Dockerfile
           tags: |
-            aurinosalvador/anlix-front:${{ env.VERSION }}
-            aurinosalvador/anlix-front:latest
+            aurinosalvador/anlix-front-desafio:${{ env.VERSION }}
+            aurinosalvador/anlix-front-desafio:latest
           context: .
 
 #      - name: Build generate image
